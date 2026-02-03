@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Hours PawCare | Instant Emergency Pet Care from Tori</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --brand-red: #E11D48;
+            --brand-blue: #2563EB;
+            --bg-soft: #F8FAFC;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-soft); 
+            color: #0F172A; 
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .emergency-glow {
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 0 0px rgba(225, 29, 72, 0.2); }
+            70% { box-shadow: 0 0 0 15px rgba(225, 29, 72, 0); }
+            100% { box-shadow: 0 0 0 0px rgba(225, 29, 72, 0); }
+        }
+
+        .scan-anim {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--brand-blue);
+            box-shadow: 0 0 10px var(--brand-blue);
+            animation: slide 3s infinite linear;
+            display: none;
+        }
+
+        @keyframes slide {
+            0% { top: 0; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .chat-bubble-ai {
+            background: var(--brand-blue);
+            color: white;
+            padding: 1rem;
+            border-radius: 1.25rem;
+            border-top-left-radius: 0;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .chat-bubble-user {
+            background: #F1F5F9;
+            color: #1E293B;
+            padding: 1rem;
+            border-radius: 1.25rem;
+            border-top-right-radius: 0;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-left: auto;
+            margin-bottom: 1rem;
+            max-width: 85%;
+        }
+
+        #chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-container::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Simple Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-rose-600 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-rose-200">
+                    <i class="fas fa-paw"></i>
+                </div>
+                <span class="font-extrabold text-xl tracking-tight text-slate-800 uppercase">Golden Hours PawCare</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-slate-500 font-semibold text-sm hover:text-slate-800 transition">How it works</button>
+                <button onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})" class="bg-rose-600 text-white px-5 py-2 rounded-full font-bold text-sm emergency-glow hover:bg-rose-700 transition">
+                    FIND VET NOW
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Main Triage Console (8 cols) -->
+        <div class="lg:col-span-8 space-y-6">
+            
+            <!-- Visual Diagnosis Area -->
+            <div class="card overflow-hidden">
+                <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+                    <h2 class="font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-camera text-blue-600"></i> Visual Diagnosis
+                    </h2>
+                    <span id="status-tag" class="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-1 rounded">Waiting for Input</span>
+                </div>
+                
+                <div id="visual-frame" class="relative aspect-video bg-slate-900 flex flex-col items-center justify-center cursor-pointer group">
+                    <div id="scanner" class="scan-anim"></div>
+                    <div id="empty-state" class="text-center p-6 group-hover:scale-105 transition-transform">
+                        <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/20">
+                            <i class="fas fa-upload text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-white font-bold mb-1">Show us the problem</h3>
+                        <p class="text-slate-400 text-sm">Upload a photo or video for instant AI analysis</p>
+                    </div>
+                    
+                    <!-- Detection Results Overlay (Hidden) -->
+                    <div id="detection-overlay" class="hidden absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                        <div class="bg-white/90 p-4 rounded-2xl shadow-2xl border border-white max-w-xs text-center">
+                            <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800">Scan Complete</h4>
+                            <p class="text-xs text-slate-600">Identified: Minor Laceration (Paw). Urgent stabilization required.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 grid grid-cols-3 gap-3 bg-slate-50">
+                    <button onclick="startFlow('photo')" class="bg-white border border-slate-200 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-100 transition shadow-sm">
+                        <i class="fas fa-image text-blue-500"></i> Photo
+                    </button>
+                    <button onclick="startFlow('video')" class="bg-white border border-slate-200 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-100 transition shadow-sm">
+                        <i class="fas fa-video text-purple-500"></i> Video
+                    </button>
+                    <button onclick="document.getElementById('chat-input').focus()" class="bg-slate-800 text-white py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-700 transition">
+                        <i class="fas fa-keyboard"></i> Type
+                    </button>
+                </div>
+            </div>
+
+            <!-- Triage Chat -->
+            <div class="card h-[450px] flex flex-col overflow-hidden">
+                <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50">
+                    <div class="chat-bubble-ai">
+                        Hello. I am PawCare AI. I can analyze photos, videos, or text descriptions to help stabilize your pet. What is the emergency?
+                    </div>
+                </div>
+                
+                <div class="p-4 border-t border-slate-100 bg-white">
+                    <form id="chat-form" class="flex items-center gap-2" onsubmit="handleChatSubmit(event)">
+                        <input id="chat-input" type="text" placeholder="Describe symptoms (e.g., bleeding, vomiting)..." class="flex-1 bg-slate-100 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-blue-500 outline-none transition placeholder:text-slate-400">
+                        <button type="submit" class="bg-blue-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg hover:bg-blue-700 transition shadow-blue-200">
+                            <i class="fas fa-paper-plane text-lg"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools & Safety (4 cols) -->
+        <div class="lg:col-span-4 space-y-6">
+            
+            <!-- Medication Guide -->
+            <div id="dosage-card" class="card p-6 border-t-4 border-t-blue-500 transition-opacity">
+                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-pills text-blue-500"></i> Medicine Safety
+                </h3>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Pet Weight</label>
+                            <div class="flex items-center gap-2">
+                                <input id="weight-input" type="number" value="5" min="1" max="100" class="w-full text-xl font-bold border-b border-slate-200 outline-none py-1 focus:border-blue-500" onchange="calculateDose()">
+                                <span class="text-slate-400 font-bold">kg</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Pet Type</label>
+                            <select id="species-input" class="w-full bg-slate-50 p-2 rounded-lg text-sm font-bold outline-none" onchange="calculateDose()">
+                                <option value="cat">Cat</option>
+                                <option value="dog">Dog</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-3 rounded-xl">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">What do you have at home?</label>
+                        <select id="medicine-input" class="w-full bg-white p-2 border border-slate-200 rounded-lg text-sm font-medium" onchange="calculateDose()">
+                            <option value="digene">Digene (Antacid)</option>
+                            <option value="avil">Avil (Allergy)</option>
+                            <option value="crocin">Crocin (Paracetamol) - DANGER</option>
+                        </select>
+                    </div>
+
+                    <div id="dose-result-box" class="bg-slate-900 text-white p-5 rounded-2xl border border-slate-800">
+                        <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Safe Emergency Dose</p>
+                        <p id="dose-value" class="text-3xl font-black mb-1">1/4 Tablet</p>
+                        <p id="dose-warning" class="text-[10px] text-slate-400 leading-relaxed italic">Calculated for 5kg Cat.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Local Remedies -->
+            <div class="card p-6">
+                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-leaf text-green-600"></i> Local Remedies (India)
+                </h3>
+                <div id="remedy-list" class="space-y-3">
+                    <div class="flex gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50">
+                        <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center text-amber-600 flex-shrink-0"><i class="fas fa-tint"></i></div>
+                        <div>
+                            <p class="text-sm font-bold">Turmeric Paste</p>
+                            <p class="text-[11px] text-slate-500">Apply to minor bleeding wounds.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 p-3 rounded-xl border border-transparent hover:bg-slate-50 transition">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0"><i class="fas fa-eye"></i></div>
+                        <div>
+                            <p class="text-sm font-bold">Homemade Saline</p>
+                            <p class="text-[11px] text-slate-500">1 tsp salt in warm water for flush.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Map -->
+            <div class="card p-6 bg-rose-50 border-rose-100">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-rose-900">Open Now (Near You)</h3>
+                    <i class="fas fa-map-marker-alt text-rose-600"></i>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white p-3 rounded-xl border border-rose-200 shadow-sm">
+                        <p class="text-xs font-bold text-slate-800">Cessna Lifeline (24h)</p>
+                        <p class="text-[10px] text-slate-500">Domlur, Bangalore • 8.2 km</p>
+                    </div>
+                    <button class="w-full py-3 bg-rose-600 text-white rounded-xl text-sm font-bold shadow-md hover:bg-rose-700 transition">
+                        START EMERGENCY GPS
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="p-8 text-center border-t border-slate-200">
+        <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">PawCare: 24/7 Digital First-Aid Architecture from Tori</p>
+    </footer>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const scanner = document.getElementById('scanner');
+        const emptyState = document.getElementById('empty-state');
+        const detectionOverlay = document.getElementById('detection-overlay');
+        const statusTag = document.getElementById('status-tag');
+
+        function addMessage(text, type = 'ai') {
+            const div = document.createElement('div');
+            div.className = type === 'ai' ? 'chat-bubble-ai' : 'chat-bubble-user';
+            div.innerHTML = text;
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function startFlow(method) {
+            // Reset
+            detectionOverlay.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            
+            addMessage(`<i>Uploading ${method}...</i>`, 'user');
+            
+            // Simulate Analysis
+            scanner.style.display = 'block';
+            statusTag.innerText = "Analyzing Assets...";
+            statusTag.className = "text-xs font-medium text-blue-500 bg-blue-50 px-2 py-1 rounded animate-pulse";
+
+            setTimeout(() => {
+                scanner.style.display = 'none';
+                emptyState.classList.add('hidden');
+                detectionOverlay.classList.remove('hidden');
+                statusTag.innerText = "Analysis Ready";
+                statusTag.className = "text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded";
+
+                addMessage(`<b>I have analyzed the visual data.</b><br><br>Diagnosis: Shallow laceration on the front-left paw pad. Bleeding is active but not arterial.<br><br><b>STABILIZATION STEPS:</b><br>1. Apply firm pressure with a clean cloth.<br>2. Use a Turmeric/Water paste if you don't have Betadine.<br>3. Keep your pet from licking the area.`, 'ai');
+                
+                // Pulse the medication guide
+                const dosageCard = document.getElementById('dosage-card');
+                dosageCard.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2');
+                setTimeout(() => dosageCard.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2'), 3000);
+            }, 2500);
+        }
+
+        function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            if (!input.value.trim()) return;
+
+            const userText = input.value;
+            addMessage(userText, 'user');
+            input.value = '';
+
+            // Simulated logic response
+            setTimeout(() => {
+                if (userText.toLowerCase().includes('bleeding')) {
+                    addMessage("Apply direct pressure for 5-10 minutes. Do not lift the cloth to check. If it soaks through, place another cloth on top.", 'ai');
+                } else if (userText.toLowerCase().includes('pain')) {
+                    addMessage("Check the dosage calculator on the right for safe relief options. <b>WARNING:</b> Human painkillers are often toxic to pets.", 'ai');
+                } else {
+                    addMessage("Understood. I've logged these symptoms. Please prioritize stabilization. Is there active vomiting or difficulty breathing?", 'ai');
+                }
+            }, 1000);
+        }
+
+        function calculateDose() {
+            const weight = document.getElementById('weight-input').value;
+            const species = document.getElementById('species-input').value;
+            const medicine = document.getElementById('medicine-input').value;
+            const doseValue = document.getElementById('dose-value');
+            const doseWarning = document.getElementById('dose-warning');
+            const doseBox = document.getElementById('dose-result-box');
+
+            if (medicine === 'crocin' && species === 'cat') {
+                doseValue.innerText = "DANGER";
+                doseValue.className = "text-3xl font-black mb-1 text-red-500";
+                doseWarning.innerText = "NEVER give Crocin to cats. Highly toxic.";
+                doseBox.className = "bg-red-50 text-red-900 p-5 rounded-2xl border border-red-200";
+            } else if (medicine === 'digene') {
+                const amount = (weight * 0.5).toFixed(1);
+                doseValue.innerText = `${amount} ml`;
+                doseValue.className = "text-3xl font-black mb-1 text-white";
+                doseWarning.innerText = `Liquid dose for ${weight}kg ${species}. Once every 8 hours.`;
+                doseBox.className = "bg-slate-900 text-white p-5 rounded-2xl border border-slate-800";
+            } else if (medicine === 'avil') {
+                const fraction = weight < 10 ? "1/4" : (weight < 25 ? "1/2" : "1");
+                doseValue.innerText = `${fraction} Tablet`;
+                doseValue.className = "text-3xl font-black mb-1 text-white";
+                doseWarning.innerText = `Emergency dose for ${weight}kg ${species}.`;
+                doseBox.className = "bg-slate-900 text-white p-5 rounded-2xl border border-slate-800";
+            } else {
+                doseValue.innerText = "Select Medicine";
+                doseBox.className = "bg-slate-900 text-white p-5 rounded-2xl border border-slate-800";
+            }
+        }
+
+        // Initialize dosage
+        calculateDose();
+    </script>
+</body>
+</html>
