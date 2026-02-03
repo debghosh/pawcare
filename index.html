@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Hours PawCare - Emergency Pet Care Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0e27;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(74, 86, 226, 0.3), transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(99, 102, 241, 0.2), transparent 50%);
+            z-index: 0;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 40px;
+        }
+
+        .logo-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 64px;
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .logo-text {
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 50%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+        }
+
+        .tagline {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .mode-card {
+            padding: 30px 40px;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.1), rgba(236, 72, 153, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .mode-card:hover::before {
+            opacity: 1;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.4);
+            border-color: rgba(167, 139, 250, 0.5);
+        }
+
+        .mode-card.active {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(236, 72, 153, 0.2));
+            border-color: rgba(167, 139, 250, 0.6);
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.5);
+        }
+
+        .mode-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+            filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.5));
+        }
+
+        .mode-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .mode-desc {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.4;
+        }
+
+        .main-interface {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .interface-panel {
+            border-radius: 32px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        .interface-panel.active {
+            display: block;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .chat-messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(167, 139, 250, 0.5);
+            border-radius: 10px;
+        }
+
+        .message {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            animation: messageSlide 0.4s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+            animation: messageSlide 0.4s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 18px 24px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            line-height: 1.6;
+        }
+
+        .chat-input-container {
+            position: relative;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 20px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+            transform: scale(1.1);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+        }
+
+        /* Voice Interface */
+        .voice-container {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .voice-orb {
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(167, 139, 250, 0.3), rgba(236, 72, 153, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.4s;
+            border: 2px solid rgba(167, 139, 250, 0.3);
+        }
+
+        .voice-orb:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 80px rgba(167, 139, 250, 0.6);
+        }
+
+        .voice-orb.active {
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 100px rgba(236, 72, 153, 0.8);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .voice-icon {
+            font-size: 80px;
+            color: #a78bfa;
+            filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.8));
+        }
+
+        .voice-status {
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .voice-instruction {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .waveform {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            margin-top: 30px;
+            height: 60px;
+            align-items: center;
+        }
+
+        .wave-bar {
+            width: 6px;
+            background: linear-gradient(to top, #a78bfa, #ec4899);
+            border-radius: 3px;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) { animation-delay: 0s; height: 20px; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; height: 30px; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; height: 45px; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; height: 35px; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 50px; }
+        .wave-bar:nth-child(6) { animation-delay: 0.5s; height: 30px; }
+        .wave-bar:nth-child(7) { animation-delay: 0.6s; height: 40px; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+
+        /* Visual Scan Interface */
+        .visual-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .upload-zone {
+            border: 3px dashed rgba(167, 139, 250, 0.4);
+            border-radius: 24px;
+            padding: 80px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s;
+            background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 30px;
+        }
+
+        .upload-zone:hover {
+            border-color: rgba(167, 139, 250, 0.8);
+            background: rgba(167, 139, 250, 0.05);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            color: #a78bfa;
+            filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.5));
+        }
+
+        .upload-text {
+            font-size: 22px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 15px;
+        }
+
+        .scan-preview {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .scan-preview.active {
+            display: grid;
+        }
+
+        .preview-image {
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            aspect-ratio: 4/3;
+        }
+
+        .preview-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .scan-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.3), transparent);
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .analysis-panel {
+            padding: 30px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+        }
+
+        .analysis-item {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .analysis-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .analysis-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .analysis-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #a78bfa;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #a78bfa, #ec4899);
+            border-radius: 10px;
+            transition: width 1s ease-out;
+        }
+
+        /* Symptom Checker Interface */
+        .symptom-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .symptom-card {
+            padding: 30px 20px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .symptom-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(167, 139, 250, 0.5);
+            background: rgba(167, 139, 250, 0.1);
+        }
+
+        .symptom-card.selected {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(236, 72, 153, 0.3));
+            border-color: #a78bfa;
+            box-shadow: 0 10px 40px rgba(167, 139, 250, 0.4);
+        }
+
+        .symptom-icon {
+            font-size: 42px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .symptom-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .diagnosis-result {
+            padding: 40px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .diagnosis-result.active {
+            display: block;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .severity-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .severity-moderate {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+
+        .severity-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(167, 139, 250, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .emergency-banner {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 20px 30px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 10px 40px rgba(239, 68, 68, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            animation: emergencyPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes emergencyPulse {
+            0%, 100% { box-shadow: 0 10px 40px rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 10px 60px rgba(239, 68, 68, 0.8); }
+        }
+
+        .emergency-banner:hover {
+            transform: scale(1.05);
+        }
+
+        .emergency-text {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 968px) {
+            .scan-preview.active {
+                grid-template-columns: 1fr;
+            }
+
+            .mode-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .logo-text {
+                font-size: 40px;
+            }
+        }
+
+        .file-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-gradient"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">🐾</div>
+                <div class="logo-text">Golden Hours PawCare</div>
+            </div>
+            <p class="tagline">AI-Powered Emergency Pet Care from Tori • Available 24/7 in Emerging Countries</p>
+        </div>
+
+        <div class="mode-selector">
+            <div class="mode-card glass active" onclick="switchMode('chat')">
+                <span class="mode-icon">💬</span>
+                <div class="mode-title">Chat Assistant</div>
+                <div class="mode-desc">Text-based consultation with AI vet</div>
+            </div>
+
+            <div class="mode-card glass" onclick="switchMode('voice')">
+                <span class="mode-icon">🎤</span>
+                <div class="mode-title">Voice Consultation</div>
+                <div class="mode-desc">Speak your concerns hands-free</div>
+            </div>
+
+            <div class="mode-card glass" onclick="switchMode('visual')">
+                <span class="mode-icon">📸</span>
+                <div class="mode-title">Visual Scan</div>
+                <div class="mode-desc">AI analysis of photos & videos</div>
+            </div>
+
+            <div class="mode-card glass" onclick="switchMode('symptom')">
+                <span class="mode-icon">🔍</span>
+                <div class="mode-title">Symptom Checker</div>
+                <div class="mode-desc">Quick guided diagnosis</div>
+            </div>
+        </div>
+
+        <div class="main-interface">
+            <!-- Chat Interface -->
+            <div class="interface-panel glass active" id="chatPanel">
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot">
+                            <div class="message-avatar">🐾</div>
+                            <div class="message-bubble">
+                                <strong>Welcome to PawCare AI Assistant</strong><br><br>
+                                I'm here to help with your pet emergency 24/7. I can provide:<br><br>
+                                • Immediate emergency guidance<br>
+                                • Safe medication dosages<br>
+                                • Natural remedy suggestions<br>
+                                • Symptom analysis<br><br>
+                                What's happening with your pet?
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-container">
+                        <div class="input-wrapper glass">
+                            <input type="text" class="chat-input" id="chatInput" placeholder="Describe your pet's symptoms..." onkeypress="handleChatKeyPress(event)">
+                            <div class="input-actions">
+                                <button class="action-btn" onclick="document.getElementById('chatFileInput').click()" title="Upload image">
+                                    <i class="fas fa-image"></i>
+                                </button>
+                                <button class="action-btn" onclick="document.getElementById('chatVideoInput').click()" title="Upload video">
+                                    <i class="fas fa-video"></i>
+                                </button>
+                                <button class="action-btn send-btn" onclick="sendChatMessage()">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Interface -->
+            <div class="interface-panel glass" id="voicePanel">
+                <div class="voice-container">
+                    <div class="voice-orb" id="voiceOrb" onclick="toggleVoice()">
+                        <i class="fas fa-microphone voice-icon"></i>
+                    </div>
+                    <div class="voice-status" id="voiceStatus">Tap to Start Speaking</div>
+                    <div class="voice-instruction">Describe your pet's symptoms naturally. I'll listen and provide immediate guidance.</div>
+
+                    <div class="waveform" id="waveform" style="display: none;">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+
+                    <div id="voiceTranscript" style="margin-top: 40px; padding: 30px; border-radius: 20px; background: rgba(255, 255, 255, 0.05); display: none;">
+                        <div style="color: rgba(255, 255, 255, 0.6); margin-bottom: 10px; font-size: 14px;">TRANSCRIPT</div>
+                        <div id="transcriptText" style="font-size: 18px; line-height: 1.6;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Scan Interface -->
+            <div class="interface-panel glass" id="visualPanel">
+                <div class="visual-container">
+                    <div class="upload-zone" onclick="document.getElementById('visualFileInput').click()">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Upload Photo or Video</div>
+                        <div class="upload-subtext">Drag & drop or click to select • Supports JPG, PNG, MP4</div>
+                    </div>
+
+                    <div class="scan-preview" id="scanPreview">
+                        <div class="preview-image">
+                            <img id="previewImg" src="" alt="Preview">
+                            <div class="scan-overlay"></div>
+                        </div>
+
+                        <div class="analysis-panel">
+                            <h3 style="margin-bottom: 25px; font-size: 24px;">AI Analysis Results</h3>
+
+                            <div class="analysis-item">
+                                <div class="analysis-label">Condition Detected</div>
+                                <div class="analysis-value">Skin Irritation / Rash</div>
+                            </div>
+
+                            <div class="analysis-item">
+                                <div class="analysis-label">Severity Level</div>
+                                <div class="analysis-value">Moderate</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%"></div>
+                                </div>
+                            </div>
+
+                            <div class="analysis-item">
+                                <div class="analysis-label">Confidence Score</div>
+                                <div class="analysis-value">87%</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 87%"></div>
+                                </div>
+                            </div>
+
+                            <div class="analysis-item">
+                                <div class="analysis-label">Recommended Action</div>
+                                <div class="analysis-value" style="font-size: 15px; line-height: 1.6; color: rgba(255, 255, 255, 0.9);">
+                                    Clean affected area with mild antiseptic. Apply natural aloe vera gel. Monitor for 24 hours.
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-pills"></i>
+                                    Get Treatment Plan
+                                </button>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-redo"></i>
+                                    Scan Again
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Symptom Checker Interface -->
+            <div class="interface-panel glass" id="symptomPanel">
+                <div class="symptom-container">
+                    <h2 style="text-align: center; margin-bottom: 15px; font-size: 28px;">Select Your Pet's Symptoms</h2>
+                    <p style="text-align: center; color: rgba(255, 255, 255, 0.6); margin-bottom: 40px;">Choose all that apply</p>
+
+                    <div class="symptom-grid">
+                        <div class="symptom-card" onclick="toggleSymptom(this, 'vomiting')">
+                            <span class="symptom-icon">🤮</span>
+                            <div class="symptom-name">Vomiting</div>
+                        </div>
+
+                        <div class="symptom-card" onclick="toggleSymptom(this, 'diarrhea')">
+                            <span class="symptom-icon">💩</span>
+                            <div class="symptom-name">Diarrhea</div>
+                        </div>
+
+                        <div class="symptom-card" onclick="toggleSymptom(this, 'lethargy')">
+                            <span class="symptom-icon">😴</span>
+                            <div class="symptom-name">Lethargy</div>
+                        </div>
+
+                        <div class="symptom-card" onclick="toggleSymptom(this, 'coughing')">
+                            <span class="symptom-icon">😷</span>
+                            <div class="symptom-name">Coughing</div>
+                        </div>
+
+                        <div class="symptom-card" onclick="toggleSymptom(this, 'bleeding')">
+                            <span class="symptom-icon">🩸</span>
+                            <div class="symptom-name">Bleeding</div>
+                        </div>
+
+                        <div class="symptom-card" onclick="toggleSymptom(this, 'seizure')">
+                            <span class="symptom-icon">⚡</span>
+                            <div class="symptom-name">Seizure</div>
+                        </div>
+
+                        <div class="symptom-card" onclick="toggleSymptom(this, 'breathing')">
+                            <span class="symptom-icon">🫁</span>
+                            <div class="symptom-name">Breathing Issues</div>
+                        </div>
+
+                        <div class="symptom-card" onclick="toggleSymptom(this, 'appetite')">
+                            <span class="symptom-icon">🍽️</span>
+                            <div class="symptom-name">Loss of Appetite</div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn btn-primary" onclick="analyzeSymptoms()" style="font-size: 18px; padding: 18px 40px;">
+                            <i class="fas fa-stethoscope"></i>
+                            Analyze Symptoms
+                        </button>
+                    </div>
+
+                    <div class="diagnosis-result" id="diagnosisResult">
+                        <span class="severity-badge severity-moderate">⚠️ MODERATE SEVERITY</span>
+
+                        <h3 style="font-size: 26px; margin-bottom: 20px;">Possible Diagnosis: Gastroenteritis</h3>
+
+                        <p style="line-height: 1.8; margin-bottom: 25px; color: rgba(255, 255, 255, 0.8);">
+                            Based on the symptoms you've selected, your pet may be experiencing gastroenteritis (stomach inflammation). This is common and usually manageable at home with proper care.
+                        </p>
+
+                        <h4 style="margin-bottom: 15px; font-size: 20px;">Immediate Actions:</h4>
+                        <ul style="line-height: 2; margin-bottom: 25px; margin-left: 20px; color: rgba(255, 255, 255, 0.8);">
+                            <li>Withhold food for 12-24 hours (water in small amounts)</li>
+                            <li>Monitor hydration levels</li>
+                            <li>Keep pet calm and comfortable</li>
+                            <li>Track frequency of symptoms</li>
+                        </ul>
+
+                        <h4 style="margin-bottom: 15px; font-size: 20px;">Natural Remedies:</h4>
+                        <ul style="line-height: 2; margin-bottom: 25px; margin-left: 20px; color: rgba(255, 255, 255, 0.8);">
+                            <li>Ginger tea (cooled) - 1 tsp per 10 lbs</li>
+                            <li>Boiled chicken & rice (bland diet)</li>
+                            <li>Probiotics for gut health</li>
+                        </ul>
+
+                        <div class="action-buttons">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-pills"></i>
+                                Get Medication Dosage
+                            </button>
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-hospital"></i>
+                                Find Nearest Vet
+                            </button>
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-phone"></i>
+                                Emergency Call
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="emergency-banner" onclick="triggerEmergency()">
+        <div class="emergency-text">
+            <i class="fas fa-ambulance"></i>
+            EMERGENCY MODE
+        </div>
+    </div>
+
+    <input type="file" id="chatFileInput" class="file-input" accept="image/*" onchange="handleChatFile(event)">
+    <input type="file" id="chatVideoInput" class="file-input" accept="video/*" onchange="handleChatFile(event)">
+    <input type="file" id="visualFileInput" class="file-input" accept="image/*,video/*" onchange="handleVisualFile(event)">
+
+    <script>
+        let selectedSymptoms = [];
+        let isVoiceActive = false;
+
+        function switchMode(mode) {
+            document.querySelectorAll('.mode-card').forEach(card => card.classList.remove('active'));
+            event.target.closest('.mode-card').classList.add('active');
+
+            document.querySelectorAll('.interface-panel').forEach(panel => panel.classList.remove('active'));
+            document.getElementById(mode + 'Panel').classList.add('active');
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (message) {
+                addChatMessage(message, 'user');
+                input.value = '';
+
+                setTimeout(() => {
+                    generateChatResponse(message);
+                }, 1200);
+            }
+        }
+
+        function addChatMessage(content, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.innerHTML = sender === 'bot' ? '🐾' : '👤';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.innerHTML = content;
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(bubble);
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function generateChatResponse(userMessage) {
+            const lowerMessage = userMessage.toLowerCase();
+            let response = '';
+
+            if (lowerMessage.includes('vomit') || lowerMessage.includes('throw')) {
+                response = `<strong>🔍 Vomiting Assessment</strong><br><br>
+                I understand your pet is vomiting. Let me help assess the situation:<br><br>
+                <strong>Immediate Actions:</strong><br>
+                • Remove food/water for 2-3 hours<br>
+                • Monitor frequency and appearance<br>
+                • Check for other symptoms<br><br>
+                <strong>Natural Remedy:</strong><br>
+                Ginger tea (cooled): 1 tsp per 10 lbs body weight<br><br>
+                <strong>🚨 Seek immediate vet care if:</strong><br>
+                • Blood present<br>
+                • Vomiting >3 times/hour<br>
+                • Signs of dehydration<br><br>
+                Would you like medication dosage recommendations?`;
+            } else if (lowerMessage.includes('bleed') || lowerMessage.includes('cut')) {
+                response = `<strong>🩸 Bleeding Emergency Protocol</strong><br><br>
+                <strong>IMMEDIATE STEPS:</strong><br>
+                1. Apply direct pressure with clean cloth (5-10 min)<br>
+                2. Elevate injured area if possible<br>
+                3. Do NOT remove cloth - add more if soaked<br><br>
+                <strong>After bleeding stops:</strong><br>
+                • Clean with lukewarm water<br>
+                • Apply diluted betadine (1:10 ratio)<br>
+                • Cover with clean bandage<br><br>
+                <strong>Natural antiseptic:</strong><br>
+                Turmeric paste for minor wounds<br><br>
+                📸 Can you upload a photo for better assessment?`;
+            } else if (lowerMessage.includes('poison') || lowerMessage.includes('toxic')) {
+                response = `<strong>🚨 POISONING EMERGENCY</strong><br><br>
+                <strong>CRITICAL ACTIONS:</strong><br>
+                • DO NOT induce vomiting yet<br>
+                • Remove pet from source<br>
+                • Note what was ingested & when<br>
+                • Keep sample if possible<br><br>
+                <strong>What did your pet ingest?</strong><br>
+                Common toxins:<br>
+                • Rat poison<br>
+                • Chocolate<br>
+                • Human medications<br>
+                • Cleaning products<br>
+                • Toxic plants<br><br>
+                ⚠️ This is critical - please specify what was ingested for specific guidance.`;
+            } else {
+                response = `Thank you for reaching out. To provide the best guidance, please share:<br><br>
+                📋 <strong>Pet Information:</strong><br>
+                • Species, breed, age, weight<br>
+                • Existing health conditions<br><br>
+                🔍 <strong>Current Situation:</strong><br>
+                • Specific symptoms<br>
+                • When symptoms started<br>
+                • Any recent changes<br><br>
+                You can also upload photos/videos or switch to Voice mode for hands-free consultation.<br><br>
+                What's your primary concern?`;
+            }
+
+            addChatMessage(response, 'bot');
+        }
+
+        function handleChatFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                addChatMessage(`📎 Uploaded ${file.type.includes('image') ? 'photo' : 'video'} for analysis`, 'user');
+
+                setTimeout(() => {
+                    const response = `<strong>✅ Visual Analysis Complete</strong><br><br>
+                    I've analyzed your ${file.type.includes('image') ? 'photo' : 'video'}.<br><br>
+                    <strong>Assessment:</strong><br>
+                    • Severity: Moderate<br>
+                    • Immediate danger: No<br>
+                    • Recommended: Home care with monitoring<br><br>
+                    <strong>Treatment Plan:</strong><br>
+                    1. Clean affected area gently<br>
+                    2. Apply natural antiseptic<br>
+                    3. Monitor for 24-48 hours<br>
+                    4. Watch for worsening symptoms<br><br>
+                    Would you like specific medication recommendations?`;
+
+                    addChatMessage(response, 'bot');
+                }, 2000);
+            }
+        }
+
+        function toggleVoice() {
+            isVoiceActive = !isVoiceActive;
+            const orb = document.getElementById('voiceOrb');
+            const status = document.getElementById('voiceStatus');
+            const waveform = document.getElementById('waveform');
+            const transcript = document.getElementById('voiceTranscript');
+
+            if (isVoiceActive) {
+                orb.classList.add('active');
+                status.textContent = 'Listening...';
+                waveform.style.display = 'flex';
+
+                setTimeout(() => {
+                    transcript.style.display = 'block';
+                    document.getElementById('transcriptText').textContent = 'My dog has been vomiting for the past 2 hours and seems very lethargic. He ate something from the garden earlier today.';
+
+                    setTimeout(() => {
+                        isVoiceActive = false;
+                        orb.classList.remove('active');
+                        status.textContent = 'Processing...';
+                        waveform.style.display = 'none';
+
+                        setTimeout(() => {
+                            status.textContent = 'Analysis Complete';
+                            const resultDiv = document.createElement('div');
+                            resultDiv.style.cssText = 'margin-top: 30px; padding: 30px; border-radius: 20px; background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.3);';
+                            resultDiv.innerHTML = `
+                                <h3 style="margin-bottom: 15px; font-size: 22px;">🔍 Voice Analysis Result</h3>
+                                <p style="line-height: 1.8; color: rgba(255, 255, 255, 0.8);">
+                                    Based on your description, your dog may have ingested something toxic from the garden. 
+                                    The combination of vomiting and lethargy requires immediate attention.<br><br>
+                                    <strong>Immediate Actions:</strong><br>
+                                    • Withhold food and water for 2 hours<br>
+                                    • Monitor for additional symptoms<br>
+                                    • Prepare to visit vet if symptoms worsen<br><br>
+                                    <strong>⚠️ Recommendation:</strong> Moderate to high concern - veterinary consultation advised within 4-6 hours.
+                                </p>
+                                <div style="margin-top: 20px;">
+                                    <button class="btn btn-primary" style="margin-right: 10px;">Get Treatment Plan</button>
+                                    <button class="btn btn-secondary">Find Nearest Vet</button>
+                                </div>
+                            `;
+                            document.querySelector('.voice-container').appendChild(resultDiv);
+                        }, 1500);
+                    }, 3000);
+                }, 1000);
+            } else {
+                orb.classList.remove('active');
+                status.textContent = 'Tap to Start Speaking';
+                waveform.style.display = 'none';
+            }
+        }
+
+        function handleVisualFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('scanPreview').classList.add('active');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function toggleSymptom(element, symptom) {
+            element.classList.toggle('selected');
+
+            if (selectedSymptoms.includes(symptom)) {
+                selectedSymptoms = selectedSymptoms.filter(s => s !== symptom);
+            } else {
+                selectedSymptoms.push(symptom);
+            }
+        }
+
+        function analyzeSymptoms() {
+            if (selectedSymptoms.length === 0) {
+                alert('Please select at least one symptom');
+                return;
+            }
+
+            document.getElementById('diagnosisResult').classList.add('active');
+            document.getElementById('diagnosisResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function triggerEmergency() {
+            if (confirm('🚨 EMERGENCY MODE\n\nThis will prioritize your case and connect you with immediate guidance.\n\nIs this a life-threatening emergency?')) {
+                switchMode('chat');
+                setTimeout(() => {
+                    addChatMessage('🚨 EMERGENCY ACTIVATED', 'user');
+                    setTimeout(() => {
+                        const response = `<strong>🚨 EMERGENCY PROTOCOL ACTIVE</strong><br><br>
+                        I'm here to help immediately. Stay calm.<br><br>
+                        <strong>Quick Assessment:</strong><br>
+                        • Is your pet breathing? YES / NO<br>
+                        • Is your pet conscious? YES / NO<br>
+                        • Is there active bleeding? YES / NO<br>
+                        • Suspected poisoning? YES / NO<br><br>
+                        <strong>Universal Emergency Steps:</strong><br>
+                        1. Move pet to safe, quiet area<br>
+                        2. Check breathing & heartbeat<br>
+                        3. Keep warm if in shock<br>
+                        4. Document symptoms (photo/video)<br><br>
+                        <strong>Please respond with emergency type or answer questions above.</strong>`;
+
+                        addChatMessage(response, 'bot');
+                    }, 800);
+                }, 300);
+            }
+        }
+
+        // Auto-scroll chat
+        const chatMessages = document.getElementById('chatMessages');
+        if (chatMessages) {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
